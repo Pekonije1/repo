@@ -36,8 +36,8 @@ public class Employee {
     @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "work_position")
-    private String workPosition;
+    @Column(name = "work_position_id")
+    private Long workPositionId;
 
     @Column(name = "bank_account")
     private String bankAccount;
@@ -47,6 +47,9 @@ public class Employee {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "disabled")
+    private Boolean disabled = false;
 
 
     @PrePersist
