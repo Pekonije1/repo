@@ -25,7 +25,7 @@ public class WorkPositionController {
     @GetMapping
     public ResponseEntity<?> getAllWorkPositions() {
         log.info("Getting work positions...");
-        return ResponseEntity.ok(workPositionService.getAllWorkPositionDTOs());
+        return ResponseEntity.ok(workPositionService.getAllWorkPosition());
     }
 
     @GetMapping("/{workPositionId}")
@@ -34,7 +34,7 @@ public class WorkPositionController {
         return ResponseEntity.ok(workPositionService.getWorkPositionById(workPositionId));
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public ResponseEntity<?> addNewWorkPosition(@RequestBody WorkPositionDTO workPositionDTO) throws ServiceException {
         log.info("Adding new work position...");
         return ResponseEntity.ok(workPositionService.addNewWorkPosition(workPositionDTO));

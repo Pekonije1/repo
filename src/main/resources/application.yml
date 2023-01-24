@@ -5,6 +5,4 @@ spring:
     password: root
   jpa:
     database: mysql
-    hibernate:
-      ddl-auto: create
-
+    show-sql: true

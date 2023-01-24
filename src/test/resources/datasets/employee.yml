@@ -1,0 +1,45 @@
+employee:
+  - id: 1
+    umcn: 1234567
+    address: address
+    bank_account: account
+    disabled: false
+    email: email@gmail.com
+    last_name: pekovic
+    name: nikola
+    phone_number: phoneNumber
+    start_date: 2022-12-12
+    work_position_id: 1
+  - id: 2
+    umcn: 123456789
+    address: address
+    bank_account: account
+    disabled: false
+    email: email1@gmail.com
+    last_name: new
+    name: user
+    phone_number: phoneNumber
+    start_date: 2022-12-12
+    work_position_id: 1
+  - id: 3
+    umcn: 123456789
+    address: address
+    bank_account: account
+    disabled: false
+    email: email2@gmail.com
+    last_name: korisnik
+    name: korisnik
+    phone_number: phoneNumber
+    start_date: 2022-12-12
+    work_position_id: 1
+  - id: 4
+    umcn: 123456789
+    address: address
+    bank_account: account
+    disabled: false
+    email: email2@gmail.com
+    last_name: radi
+    name: kes
+    phone_number: phoneNumber
+    start_date: 2022-12-12
+    work_position_id: 1

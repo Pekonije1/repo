@@ -8,7 +8,7 @@ import java.util.List;
 public interface WorkPositionService {
     WorkPositionDTO addNewWorkPosition(WorkPositionDTO workPositionDTO) throws ServiceException;
 
-    List<WorkPositionDTO> getAllWorkPositionDTOs();
+    List<WorkPositionDTO> getAllWorkPosition();
 
     WorkPositionDTO getWorkPositionById(Long id) throws ServiceException;
 

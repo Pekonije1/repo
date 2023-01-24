@@ -42,7 +42,7 @@ public class WorkPositionServiceImpl implements WorkPositionService {
     }
 
     @Override
-    public List<WorkPositionDTO> getAllWorkPositionDTOs() {
+    public List<WorkPositionDTO> getAllWorkPosition() {
         return workPositionMapper.toDto(workPositionRepository.findAll());
     }
 

@@ -30,4 +30,23 @@ public interface EmployeeService {
      * @return the all employees
      */
     List<EmployeeDTO> getAllEmployees();
+
+    /**
+     * This method is used to return all active employees (disabled = false)
+     *
+     * @return the all active employees
+     */
+    List<EmployeeDTO> getAllActiveEmployees();
+
+    /**
+     * This method is used to disable employee.
+     * It will check if employee exists or if it is already disabled
+     *
+     * @param id the id
+     * @return the employee dto
+     * @throws ServiceException the service exception
+     */
+    EmployeeDTO disableEmployee(Long id) throws ServiceException;
+
+    EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) throws ServiceException;
 }

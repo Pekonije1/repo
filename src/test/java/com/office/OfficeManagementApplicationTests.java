@@ -1,10 +1,9 @@
 package com.office;
 
+import com.office.config.SpringTestBase;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class OfficeManagementApplicationTests {
+class OfficeManagementApplicationTests extends SpringTestBase {
 
     @Test
     void contextLoads() {

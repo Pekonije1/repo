@@ -1,7 +1,10 @@
 package com.office.entities;
 
 import com.utils.IdGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +16,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "employee")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employee {
     @Id
     @Column(name = "id")
@@ -49,7 +55,7 @@ public class Employee {
     private String address;
 
     @Column(name = "disabled")
-    private Boolean disabled = false;
+    private boolean disabled = false;
 
 
     @PrePersist

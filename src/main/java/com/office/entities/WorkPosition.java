@@ -10,7 +10,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "work-position")
+@Table(name = "work_position")
 @Data
 public class WorkPosition {
     @Id
