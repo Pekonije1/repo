@@ -52,4 +52,9 @@ public class EmployeeController {
     public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDTO employeeDTO) throws ServiceException {
         return ResponseEntity.ok(employeeService.updateEmployee(employeeDTO));
     }
+
+    @GetMapping("/by-work-position/{workPositionId}")
+    public ResponseEntity<?> getEmployeesByWorkPosition(@PathVariable("workPositionId") Long workPositionId) {
+        return ResponseEntity.ok(employeeService.getEmployeesByWorkPosition(workPositionId));
+    }
 }

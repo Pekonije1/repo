@@ -111,6 +111,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toDto(employeeRepository.save(employee));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param employeeDTO the employee dto
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) throws ServiceException {
         EmployeeValidationUtils.validateEmployeeInputData(employeeDTO);
@@ -131,6 +138,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeDTO> allEmployees = getAllEmployees();
         allEmployees.remove(employeeToUpdate);
         return allEmployees;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param workPositionId the work position id
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> getEmployeesByWorkPosition(Long workPositionId) {
+        List<Employee> employeesByWorkPosition = employeeRepository.findByWorkPosition(workPositionId);
+        return employeeMapper.toDto(employeesByWorkPosition);
     }
 
 }

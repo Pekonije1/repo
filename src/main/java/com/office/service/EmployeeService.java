@@ -48,5 +48,20 @@ public interface EmployeeService {
      */
     EmployeeDTO disableEmployee(Long id) throws ServiceException;
 
+    /**
+     * This method is used to update employee
+     *
+     * @param employeeDTO the employee dto
+     * @return the employee dto
+     * @throws ServiceException the service exception
+     */
     EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) throws ServiceException;
+
+    /**
+     * This method is used to return employees grouped by work position
+     *
+     * @param workPositionId the work position id
+     * @return the employees by work position
+     */
+    List<EmployeeDTO> getEmployeesByWorkPosition(Long workPositionId);
 }
