@@ -1,22 +1,14 @@
 package com.office.exceptions;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorMessage implements Serializable {
     String message;
-
-    public ErrorMessage() {
-    }
-
-    public ErrorMessage(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }
