@@ -25,7 +25,7 @@ public class WorkPositionController {
     @GetMapping
     public ResponseEntity<?> getAllWorkPositions() {
         log.info("Getting work positions...");
-        return ResponseEntity.ok(workPositionService.getAllWorkPosition());
+        return ResponseEntity.ok(workPositionService.getAllWorkPositions());
     }
 
     @GetMapping("/{workPositionId}")

@@ -30,4 +30,5 @@ public class ApplicationMessages {
     public static final String WORK_POSITION_NAME_MUST_BE_SET_ERROR_MSG = "Work position name must be set.";
     public static final String WORK_POSITION_NAME_TOO_LARGE_ERROR_MSG = "Work position name is too large, must contain less than 128 characters.";
     public static final String WORK_POSITION_DOESNT_EXIST_ERROR_MSG = "Work position doesn't exist.";
+    public static final String WORK_POSITION_ALREADY_EXISTS_ERROR_MSG = "Work position already exists.";
 }

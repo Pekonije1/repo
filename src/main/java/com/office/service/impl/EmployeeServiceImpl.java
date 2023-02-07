@@ -1,34 +1,40 @@
 package com.office.service.impl;
 
+import com.office.cache.EmployeeCache;
 import com.office.dto.EmployeeDTO;
-import com.office.dto.WorkPositionDTO;
 import com.office.entities.Employee;
 import com.office.exceptions.ServiceException;
 import com.office.mappers.EmployeeMapper;
 import com.office.repositories.EmployeeRepository;
 import com.office.service.EmployeeService;
 import com.office.service.WorkPositionService;
-import com.office.service.util.EmployeeValidationUtils;
+import com.office.service.validation.EmployeeValidation;
+import com.office.service.validation.ValidationUtils;
 import com.utils.ApplicationMessages;
-import com.utils.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
+@EnableAsync
 @Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final WorkPositionService workPositionService;
+    private final RedisTemplate<String, Employee> redisTemplate;
+    private final EmployeeCache employeeCache;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper, WorkPositionService workPositionService) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper, WorkPositionService workPositionService, RedisTemplate<String, Employee> redisTemplate, EmployeeCache employeeCache) {
         this.employeeRepository = employeeRepository;
         this.employeeMapper = employeeMapper;
         this.workPositionService = workPositionService;
+        this.redisTemplate = redisTemplate;
+        this.employeeCache = employeeCache;
     }
 
     /**
@@ -40,26 +46,14 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) throws ServiceException {
-        EmployeeValidationUtils.validateEmployeeInputData(employeeDTO);
+        EmployeeValidation.validateEmployeeInputData(employeeDTO);
         List<EmployeeDTO> allEmployees = getAllEmployees();
-        validateEmployeesUniqueFields(employeeDTO, allEmployees);
+        EmployeeValidation.validateEmployeesUniqueFields(employeeDTO, allEmployees);
+        workPositionService.checkIfWorkPositionExists(employeeDTO.getWorkPositionId());
         Employee savedEmployee = employeeRepository.save(employeeMapper.toEntity(employeeDTO));
+        employeeCache.putInCache(savedEmployee);
         return employeeMapper.toDto(savedEmployee);
     }
-
-    private void validateEmployeesUniqueFields(EmployeeDTO employeeDTO, List<EmployeeDTO> allEmployees) throws ServiceException {
-        List<WorkPositionDTO> allWorkPositionDTOs = workPositionService.getAllWorkPosition();
-
-        List<Long> allUMCNs = allEmployees.stream().map(EmployeeDTO::getUMCN).collect(Collectors.toList());
-        List<String> allEmails = allEmployees.stream().map(EmployeeDTO::getEmail).collect(Collectors.toList());
-        List<String> allBankAccounts = allEmployees.stream().map(EmployeeDTO::getBankAccount).collect(Collectors.toList());
-        List<String> allPhoneNumbers = allEmployees.stream().map(EmployeeDTO::getPhoneNumber).collect(Collectors.toList());
-        List<Long> workPositionIds = allWorkPositionDTOs.stream().map(WorkPositionDTO::getId).collect(Collectors.toList());
-
-        EmployeeValidationUtils.checkUniqueData(employeeDTO, allUMCNs, allEmails, allBankAccounts, allPhoneNumbers);
-        EmployeeValidationUtils.checkIfWorkPositionExists(employeeDTO, workPositionIds);
-    }
-
 
     /**
      * {@inheritDoc}
@@ -106,8 +100,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDTO disableEmployee(Long id) throws ServiceException {
         ValidationUtils.checkIfObjectExists(id, ApplicationMessages.PARAMETER_MUST_BE_SET);
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ServiceException(ApplicationMessages.EMPLOYEE_DOESNT_EXIST_ERROR_MSG));
-        EmployeeValidationUtils.checkIfEmployeeIsDisabled(employee);
+        EmployeeValidation.checkIfEmployeeIsDisabled(employee);
+        return saveDisabledEmployee(employee);
+    }
+
+    private EmployeeDTO saveDisabledEmployee(Employee employee) {
+        employeeCache.deleteFromCache(employee);
         employee.setDisabled(true);
+        employeeCache.putInCache(employee);
         return employeeMapper.toDto(employeeRepository.save(employee));
     }
 
@@ -120,21 +120,34 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     public EmployeeDTO updateEmployee(EmployeeDTO employeeDTO) throws ServiceException {
-        EmployeeValidationUtils.validateEmployeeInputData(employeeDTO);
+        EmployeeValidation.validateEmployeeInputData(employeeDTO);
         EmployeeDTO employeeToUpdate = getEmployeeById(employeeDTO.getId());
 
         if (employeeToUpdate.equals(employeeDTO)) {
             log.info(ApplicationMessages.NOTHING_TO_UPDATE_INFO_MSG);
             return employeeDTO;
         }
+        List<EmployeeDTO> allEmployees = getEmployeeValidationList(employeeToUpdate);
+        EmployeeValidation.validateEmployeesUniqueFields(employeeDTO, allEmployees);
 
-        List<EmployeeDTO> allEmployees = getEmployeeDTOS(employeeToUpdate);
-        validateEmployeesUniqueFields(employeeDTO, allEmployees);
-        Employee updatedEmployee = employeeRepository.save(employeeMapper.toEntity(employeeDTO));
+        Employee updatedEmployee = saveUpdatedEmployee(employeeDTO, employeeToUpdate);
         return employeeMapper.toDto(updatedEmployee);
     }
 
-    private List<EmployeeDTO> getEmployeeDTOS(EmployeeDTO employeeToUpdate) {
+    private Employee saveUpdatedEmployee(EmployeeDTO employeeDTO, EmployeeDTO employeeToUpdate) {
+        employeeCache.deleteFromCache(employeeMapper.toEntity(employeeToUpdate));
+        Employee updatedEmployee = employeeRepository.save(employeeMapper.toEntity(employeeDTO));
+        employeeCache.putInCache(updatedEmployee);
+        return updatedEmployee;
+    }
+
+    /**
+     * This method is used to generate list of all employees except the one that is being updated
+     *
+     * @param employeeToUpdate
+     * @return
+     */
+    private List<EmployeeDTO> getEmployeeValidationList(EmployeeDTO employeeToUpdate) {
         List<EmployeeDTO> allEmployees = getAllEmployees();
         allEmployees.remove(employeeToUpdate);
         return allEmployees;

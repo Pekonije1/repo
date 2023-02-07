@@ -1,24 +1,28 @@
-package com.office.service.util;
+package com.office.service.validation;
 
 import com.office.dto.EmployeeDTO;
 import com.office.entities.Employee;
 import com.office.exceptions.ServiceException;
 import com.utils.ApplicationMessages;
-import com.utils.ValidationUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-public class EmployeeValidationUtils {
+public class EmployeeValidation {
 
     public static void checkIfEmployeeIsDisabled(Employee employee) throws ServiceException {
         if (employee.isDisabled())
             throw new ServiceException(ApplicationMessages.EMPLOYEE_DISABLED_ERROR_MSG);
     }
 
-    public static void checkIfWorkPositionExists(EmployeeDTO employeeDTO, List<Long> workPositionIds) throws ServiceException {
-        if (!workPositionIds.contains(employeeDTO.getWorkPositionId()))
-            throw new ServiceException(ApplicationMessages.WORK_POSITION_DOESNT_EXIST_ERROR_MSG);
+    public static void validateEmployeesUniqueFields(EmployeeDTO employeeDTO, List<EmployeeDTO> allEmployees) throws ServiceException {
+        List<Long> allUMCNs = allEmployees.stream().map(EmployeeDTO::getUmcn).collect(Collectors.toList());
+        List<String> allEmails = allEmployees.stream().map(EmployeeDTO::getEmail).collect(Collectors.toList());
+        List<String> allBankAccounts = allEmployees.stream().map(EmployeeDTO::getBankAccount).collect(Collectors.toList());
+        List<String> allPhoneNumbers = allEmployees.stream().map(EmployeeDTO::getPhoneNumber).collect(Collectors.toList());
+
+        EmployeeValidation.checkUniqueData(employeeDTO, allUMCNs, allEmails, allBankAccounts, allPhoneNumbers);
     }
 
     public static void checkUniqueData(EmployeeDTO employeeDTO, List<Long> allUMCNs, List<String> allEmails, List<String> allBankAccounts, List<String> allPhoneNumbers) throws ServiceException {
@@ -44,7 +48,7 @@ public class EmployeeValidationUtils {
     }
 
     private static void checkIfUMCNisDuplicate(EmployeeDTO employeeDTO, List<Long> allUMCNs) throws ServiceException {
-        if (allUMCNs.contains(employeeDTO.getUMCN()))
+        if (allUMCNs.contains(employeeDTO.getUmcn()))
             throw new ServiceException(ApplicationMessages.EMPLOYEES_UMCN_ALREADY_EXISTS_ERROR_MSG);
     }
 
@@ -54,7 +58,7 @@ public class EmployeeValidationUtils {
         ValidationUtils.checkStringLength(employeeDTO.getName(), 128, ApplicationMessages.EMPLOYEE_NAME_TOO_LARGE_ERROR_MSG);
         ValidationUtils.checkIfObjectExists(employeeDTO.getLastName(), ApplicationMessages.EMPLOYEE_LASTNAME_MUST_BE_SET_ERROR_MSG);
         ValidationUtils.checkStringLength(employeeDTO.getLastName(), 128, ApplicationMessages.EMPLOYEE_LASTNAME_TOO_LARGE_ERROR_MSG);
-        ValidationUtils.checkIfObjectExists(employeeDTO.getUMCN(), ApplicationMessages.EMPLOYEE_UMCN_MUST_BE_SET_ERROR_MSG);
+        ValidationUtils.checkIfObjectExists(employeeDTO.getUmcn(), ApplicationMessages.EMPLOYEE_UMCN_MUST_BE_SET_ERROR_MSG);
         ValidationUtils.checkIfObjectExists(employeeDTO.getEmail(), ApplicationMessages.EMPLOYEE_EMAIL_MUST_BE_SET_ERROR_MSG);
         ValidationUtils.checkIfEmailIsValid(employeeDTO.getEmail(), ApplicationMessages.EMPLOYEE_EMAIL_NOT_VALID_ERROR_MSG);
         ValidationUtils.checkIfObjectExists(employeeDTO.getStartDate(), ApplicationMessages.EMPLOYEE_START_DATE_MUST_BE_SET_ERROR_MSG);

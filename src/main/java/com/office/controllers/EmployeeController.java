@@ -28,7 +28,6 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.addEmployee(employee));
     }
 
-    @GetMapping()
     public ResponseEntity<?> getAllActiveEmployees() {
         return ResponseEntity.ok(employeeService.getAllActiveEmployees());
     }

@@ -1,5 +1,9 @@
 package com.office.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.utils.IdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "employee")
@@ -28,7 +32,7 @@ public class Employee {
      * Unique Master Citizen Number (every citizen must have)
      */
     @Column(name = "umcn")
-    private Long UMCN;
+    private Long umcn;
 
     @Column(name = "name")
     private String name;
@@ -40,7 +44,9 @@ public class Employee {
     private String email;
 
     @Column(name = "start_date")
-    private LocalDate startDate;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime startDate;
 
     @Column(name = "work_position_id")
     private Long workPositionId;

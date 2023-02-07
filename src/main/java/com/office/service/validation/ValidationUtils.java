@@ -1,4 +1,4 @@
-package com.utils;
+package com.office.service.validation;
 
 import com.office.exceptions.ServiceException;
 import org.apache.commons.lang3.StringUtils;

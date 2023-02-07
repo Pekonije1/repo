@@ -2,6 +2,8 @@ package com.office.service.impl;
 
 
 import com.github.database.rider.core.api.dataset.DataSet;
+import com.office.cache.EmployeeCache;
+import com.office.cache.WorkPositionCache;
 import com.office.config.SpringTestBase;
 import com.office.dto.EmployeeDTO;
 import com.office.entities.Employee;
@@ -11,9 +13,13 @@ import com.office.service.EmployeeService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 public class EmployeeServiceImplTest extends SpringTestBase {
 
@@ -23,9 +29,16 @@ public class EmployeeServiceImplTest extends SpringTestBase {
     @Autowired
     EmployeeRepository employeeRepository;
 
+    @MockBean
+    EmployeeCache employeeCacheMocked;
+
+    @MockBean
+    WorkPositionCache workPositionCacheMocked;
+
     @Test
     @DataSet(value = "employee.yml")
     public void shouldGetAllEmployees() {
+        mockCache();
         List<EmployeeDTO> allEmployees = employeeService.getAllEmployees();
         Assert.assertFalse(allEmployees.isEmpty());
     }
@@ -33,13 +46,14 @@ public class EmployeeServiceImplTest extends SpringTestBase {
     @Test
     @DataSet(value = {"employee.yml", "work_position.yml"})
     public void shouldAddEmployee() throws ServiceException {
+        mockCache();
         EmployeeDTO employeeDTO = EmployeeDTO.builder()
                 .name("name")
                 .lastName("lastName")
                 .address("address")
-                .startDate(LocalDate.now())
+                .startDate(LocalDateTime.now())
                 .email("someEmail@gmail.com")
-                .UMCN(1L)
+                .umcn(1L)
                 .bankAccount("bank")
                 .phoneNumber("phone")
                 .workPositionId(1L)
@@ -59,5 +73,10 @@ public class EmployeeServiceImplTest extends SpringTestBase {
 
         Assert.assertTrue(employeeCountAfterAddingNew > employeeCountBeforeAddingNew);
 
+    }
+
+    private void mockCache() {
+        doReturn(null).when(employeeCacheMocked).getEmployeeFromCache(any());
+        doReturn(null).when(workPositionCacheMocked).getWorkPositionFromCache(any());
     }
 }
